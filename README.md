@@ -8,7 +8,7 @@ source wav waveform
 ![source](snap/source.jpg)
 
 avg mix wav waveform
-![avg_mix](snap/avg_mix.jpg)
+![avg_mix](snap/nlms_mix.jpg)
 
 nlms mix wav waveform
-![avg_mix](snap/nlms_mix.jpg)
+![avg_mix](snap/avg_mix.jpg)
