@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+    <Button
+        android:id="@+id/btnSource"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="愿wav播放"/>
+
+    <Button
+        android:id="@+id/btnAvgMix"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="平均混音测试"/>
+
+    <Button
+        android:id="@+id/btnNLMSMix"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="自适应混音加权测试"/>
+</LinearLayout>
