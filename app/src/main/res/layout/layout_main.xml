@@ -9,17 +9,27 @@
         android:id="@+id/btnSource"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="愿wav播放"/>
+        android:text="source wav"/>
+    <Button
+        android:id="@+id/btnConcatAudio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="concat"/>
 
+    <Button
+        android:id="@+id/btnClipAudio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="clip audio"/>
     <Button
         android:id="@+id/btnAvgMix"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="平均混音测试"/>
+        android:text="avg mix"/>
 
     <Button
         android:id="@+id/btnNLMSMix"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="自适应混音加权测试"/>
+        android:text="NLMS mix"/>
 </LinearLayout>

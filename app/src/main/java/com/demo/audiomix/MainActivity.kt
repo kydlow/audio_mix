@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.demo.audiomix.activity.AvgMixActivity
+import com.demo.audiomix.activity.ClipActivity
+import com.demo.audiomix.activity.ConcatActivity
 import com.demo.audiomix.activity.NLMSMixActivity
 import com.demo.audiomix.activity.WavPlayActivity
 
@@ -21,8 +23,16 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this@MainActivity, AvgMixActivity::class.java))
         }
 
+        findViewById<View>(R.id.btnClipAudio).setOnClickListener {
+            startActivity(Intent(this@MainActivity, ClipActivity::class.java))
+        }
+
         findViewById<View>(R.id.btnNLMSMix).setOnClickListener {
             startActivity(Intent(this@MainActivity, NLMSMixActivity::class.java))
+        }
+
+        findViewById<View>(R.id.btnConcatAudio).setOnClickListener {
+            startActivity(Intent(this@MainActivity, ConcatActivity::class.java))
         }
     }
 }

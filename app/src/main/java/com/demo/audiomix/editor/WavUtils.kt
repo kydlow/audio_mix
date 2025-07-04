@@ -15,36 +15,7 @@ object WavUtils {
     private const val WAV_HEADER_SIZE = 44
     private const val BUFFER_SIZE = 8192 // 增大缓冲区以提高性能
 
-    // 读取 WAV 文件并转换为 PCM 数据
-    suspend fun readWavToPcm(inputStream: InputStream): AudioInfo {
-        try {
-            inputStream.use {
-                // 读取 WAV 头部
-                val header = ByteArray(WAV_HEADER_SIZE)
-                if (it.read(header) != WAV_HEADER_SIZE) {
-                    Log.e(TAG, "Failed to read WAV header: insufficient bytes")
-                    return AudioInfo(byteArrayOf(), 0, 0)
-                }
 
-                // 验证 WAV 文件格式
-                if (!validateWavHeader(header)) {
-                    Log.e(TAG, "Invalid WAV file format")
-                    return AudioInfo(byteArrayOf(), 0, 0)
-                }
-
-                // 解析采样率和声道数
-                val channels = readShort(header, 22)
-                val sampleRate = readInt(header, 24)
-
-                // 读取 PCM 数据
-                val pcmData = readPcmData(it)
-                return AudioInfo(pcmData, sampleRate, channels)
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error reading WAV file: ${e.message}", e)
-            return AudioInfo(byteArrayOf(), 0, 0)
-        }
-    }
 
     // 写入 PCM 数据到 WAV 文件
     fun writePcmToWav(pcmData: ByteArray, outputFile: File, sampleRate: Int, channels: Int) {

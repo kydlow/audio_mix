@@ -10,6 +10,13 @@ import android.os.Looper
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 class WaveformView @JvmOverloads constructor(
     context: Context,
@@ -39,13 +46,25 @@ class WaveformView @JvmOverloads constructor(
     }
 
     private var mediaPlayer: MediaPlayer? = null
-    private val progressHandler = Handler(Looper.getMainLooper())
-    private val progressUpdater = object : Runnable {
-        override fun run() {
-            updateProgressFromMediaPlayer()
-            progressHandler.postDelayed(this, 100)
+    private var job: Job? = null
+    private val scope = CoroutineScope(Dispatchers.Main)
+
+    fun startTimer() {
+        if (job?.isActive == true) return // 防止重复启动
+
+        job = scope.launch {
+            while (isActive) {
+                updateProgressFromMediaPlayer()
+                delay(100.milliseconds)
+            }
         }
     }
+
+    fun stopTimer() {
+        job?.cancel()
+        job = null
+    }
+
 
     fun setMediaPlayer(player: MediaPlayer) {
         mediaPlayer = player
@@ -53,11 +72,11 @@ class WaveformView @JvmOverloads constructor(
     }
 
     fun startProgressUpdates() {
-        progressHandler.post(progressUpdater)
+        startTimer()
     }
 
     fun stopProgressUpdates() {
-        progressHandler.removeCallbacks(progressUpdater)
+        stopTimer()
     }
 
     private fun updateProgressFromMediaPlayer() {

@@ -36,13 +36,13 @@ class AvgMixActivity : AppCompatActivity() {
         mixButton = findViewById(R.id.btnMix)
 
         val audioUtils = AudioUtils(this)
-        outputWavPath = "${filesDir}/mixed.wav"
+        outputWavPath = "${filesDir}/mixed_avg.wav"
 
         mixButton.setOnClickListener {
             lifecycleScope.launch {
-                pcmData = audioUtils.convertAndMixWavToPcm(
-                    instrumentalResId = R.raw.instrumental,
-                    vocalsResId = R.raw.vocals,
+                pcmData = audioUtils.mixAudio(
+                    audioResId1 = R.raw.instrumental,
+                    audioResId2 = R.raw.vocals,
                     outputWavPath = outputWavPath,
                     mixingStrategy = AvgMixingStrategy()
                 )

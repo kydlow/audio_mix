@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.demo.audiomix.editor.AudioUtils
 import com.demo.audiomix.R
+import com.demo.audiomix.editor.reader.AudioReader
 import com.demo.audiomix.view.WaveformView
 import kotlinx.coroutines.launch
 import java.io.File
@@ -32,12 +33,14 @@ class WavPlayActivity : AppCompatActivity() {
         waveformView = findViewById(R.id.waveform_view)
         playButton = findViewById(R.id.btnPlay)
 
-        val audioUtils = AudioUtils(this)
+        val audioReader = AudioReader(this)
+
         outputWavPath = "${filesDir}/mixed.wav"
 
         lifecycleScope.launch {
-            pcmData = audioUtils.readWavToPcm(
-                resId = R.raw.song
+            pcmData = audioReader.readPcmByResourceId(
+                resId = R.raw.song,
+                format = "wav"
             ).pcmData
             if (pcmData != null) {
                 waveformView.setPcmData(pcmData!!)
