@@ -8,6 +8,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 
 // 音频处理工具类，负责将两个WAV音频文件转换为PCM格式并进行混音
 class AudioUtils(private val context: Context) {
@@ -137,8 +139,8 @@ class AudioUtils(private val context: Context) {
             //startbyte = t(start-s) * sample * channel * bitsPerSample
             //startbyte = t(end-s) * sample * channel * bitsPerSample
             // 计算样本索引
-            val startSample = (startTime * audio1AudioInfo.sampleRate).toLong().coerceAtLeast(0)
-            val endSample = (endTime * audio1AudioInfo.sampleRate).toLong()
+            val startSample = (startTime * audio1AudioInfo.sampleRate).coerceAtLeast(0)
+            val endSample = (endTime * audio1AudioInfo.sampleRate)
 
             Log.i("ellery","pcm size = ${audio1AudioInfo.pcmData.size} " )
 
@@ -148,12 +150,51 @@ class AudioUtils(private val context: Context) {
             // 计算字节偏移
             val startByte = startTime * audio1AudioInfo.sampleRate * audio1AudioInfo.bytePerSample/8 * audio1AudioInfo.channels
 
+            // 计算淡入/淡出样本数
+            val fadeInSamples = (fadeInDuration * audio1AudioInfo.sampleRate).toLong().coerceAtMost(totalSamples)
+            val fadeOutSamples = (fadeOutDuration * audio1AudioInfo.sampleRate).toLong().coerceAtMost(totalSamples)
+
 
             Log.i("ellery","startByte = $startByte " )
 
             // 提取剪辑数据
             val clipData = ByteArray((totalSamples).toInt() * audio1AudioInfo.bytePerSample/8 * audio1AudioInfo.channels)
             System.arraycopy(audio1AudioInfo.pcmData, startByte.toInt(), clipData, 0, clipData.size)
+
+            // 应用淡入/淡出
+            if (audio1AudioInfo.bytePerSample == 16) {
+                val buffer = ByteBuffer.wrap(clipData).order(ByteOrder.LITTLE_ENDIAN)
+                for (i in 0 until totalSamples) {
+                    val sampleIndex = i * audio1AudioInfo.channels
+                    val fadeFactor = when {
+                        i < fadeInSamples -> i.toDouble() / fadeInSamples
+                        i > totalSamples - fadeOutSamples -> (totalSamples - i).toDouble() / fadeOutSamples
+                        else -> 1.0
+                    }
+                    for (ch in 0 until audio1AudioInfo.channels) {
+                        val idx = ((sampleIndex + ch) * 2).toInt()
+                        val sample = buffer.getShort(idx)
+                        buffer.putShort(idx, (sample * fadeFactor).toInt().toShort())
+                    }
+                }
+            } else if (audio1AudioInfo.bytePerSample == 8) {
+                for (i in 0 until totalSamples) {
+                    val sampleIndex = i * audio1AudioInfo.channels
+                    val fadeFactor = when {
+                        i < fadeInSamples -> i.toDouble() / fadeInSamples
+                        i > totalSamples - fadeOutSamples -> (totalSamples - i).toDouble() / fadeOutSamples
+                        else -> 1.0
+                    }
+                    for (ch in 0 until  audio1AudioInfo.channels) {
+                        val idx = (sampleIndex + ch).toInt()
+                        val sample = (clipData[idx].toInt() and 0xFF) - 128 // 转换为有符号
+                        clipData[idx] = ((sample * fadeFactor).toInt() + 128).toByte()
+                    }
+                }
+            } else {
+                throw IllegalArgumentException("Unsupported bits per sample: ${audio1AudioInfo.bytePerSample}")
+            }
+
 
             // 保存混音后的数据为WAV文件
             val outputFile = File(outputWavPath)

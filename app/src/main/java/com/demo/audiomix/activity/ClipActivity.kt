@@ -67,8 +67,8 @@ class ClipActivity : AppCompatActivity() {
                     outputWavPath = outputWavPath,
                     startTime = startTime,//传入秒
                     endTime = endTime,//传入秒
-                    fadeInDuration = 0.0,
-                    fadeOutDuration = 0.0
+                    fadeInDuration = 0.1,
+                    fadeOutDuration = 0.1
                 )
                 if (pcmData != null) {
                     waveformView.setPcmData(pcmData!!)
